@@ -40,7 +40,14 @@ void loop()
   display.setTextSize(1);
   display.setTextColor(WHITE);
   display.setCursor(0, 0);
-  display.println("Hello, world!");
+  display.print("Temp: ");
+  display.setCursor(50, 0);
+  display.print(temp.temperature);
+  display.setCursor(0, 20);
+  display.print("Hum: ");
+  display.setCursor(50, 20);
+  display.println(humidity.relative_humidity);
+
   display.display();
   delay(2000);
 }
