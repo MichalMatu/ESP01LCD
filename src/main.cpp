@@ -414,4 +414,26 @@ void testanimate(const uint8_t *bitmap, uint8_t w, uint8_t h)
 void loop()
 {
   testdrawcircle();
+  delay(1000);
+  testdrawrect();
+  delay(1000);
+  testfillrect();
+  delay(1000);
+  testdrawtriangle();
+  delay(1000);
+  testfilltriangle();
+  delay(1000);
+  testdrawroundrect();
+  delay(1000);
+  testfillroundrect();
+  delay(1000);
+  testdrawchar();
+  delay(1000);
+  testdrawstyles();
+  delay(1000);
+  testscrolltext();
+  delay(1000);
+  testdrawbitmap();
+  delay(1000);
+  testanimate(logo_bmp, LOGO_WIDTH, LOGO_HEIGHT);
 }
