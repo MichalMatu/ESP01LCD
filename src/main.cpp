@@ -26,7 +26,6 @@ typedef struct struct_message
   char a[32];
   float b;
   float c;
-  String d;
 } struct_message;
 
 // Create a struct_message called myData
@@ -122,7 +121,6 @@ void loop()
     strcpy(myData.a, "THIS IS A SENSOR READINGS");
     myData.b = temp.temperature;
     myData.c = humidity.relative_humidity;
-    myData.d = "-----------------";
 
     // Send message via ESP-NOW
     esp_now_send(broadcastAddress, (uint8_t *)&myData, sizeof(myData));
