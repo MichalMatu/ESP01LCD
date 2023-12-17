@@ -3,6 +3,7 @@
 #include <Adafruit_SSD1306.h>
 #include <Adafruit_AHTX0.h>
 #include <ESP8266WiFi.h>
+#include <espnow.h>
 
 #define SCREEN_WIDTH 128 // OLED display width, in pixels
 #define SCREEN_HEIGHT 64 // OLED display height, in pixels
@@ -15,6 +16,8 @@ sensors_event_t humidity, temp;
 
 // create variable to store mac adress
 String mac;
+// REPLACE WITH RECEIVER MAC Address - 48:3F:DA:AA:0E:B9
+uint8_t broadcastAddress[] = {0x48, 0x3F, 0xDA, 0xAA, 0x0E, 0xB9};
 
 void setup()
 {
