@@ -31,6 +31,8 @@ typedef struct struct_message
 // Create a struct_message called myData
 struct_message myData;
 
+bool deviceConnected = false;
+
 // Callback when data is sent
 void OnDataSent(uint8_t *mac_addr, uint8_t sendStatus)
 {
@@ -38,10 +40,12 @@ void OnDataSent(uint8_t *mac_addr, uint8_t sendStatus)
   if (sendStatus == 0)
   {
     Serial.println("Delivery success");
+    deviceConnected = true;
   }
   else
   {
     Serial.println("Delivery fail");
+    deviceConnected = false;
   }
 }
 
@@ -114,8 +118,17 @@ void loop()
     display.print("%");
     display.setCursor(10, 10);
     display.print(mac);
+    // display "Reciver connected" if sendstatus is 0 otherwise display "Reciver disconnected"
+    display.setCursor(20, 20);
+    if (deviceConnected)
+    {
+      display.print("Connected");
+    }
+    else
+    {
+      display.print("Disconnected");
+    }
     display.display();
-    sensorLastTime = millis();
 
     // Set values to send
     strcpy(myData.a, "THIS IS A SENSOR READINGS");
@@ -124,5 +137,7 @@ void loop()
 
     // Send message via ESP-NOW
     esp_now_send(broadcastAddress, (uint8_t *)&myData, sizeof(myData));
+
+    sensorLastTime = millis();
   }
 }
