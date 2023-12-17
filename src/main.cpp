@@ -12,7 +12,6 @@ typedef struct struct_message
   char a[32];
   float b;
   float c;
-  String d;
 } struct_message;
 
 // Create a struct_message called myData
@@ -24,14 +23,11 @@ void OnDataRecv(uint8_t *mac, uint8_t *incomingData, uint8_t len)
   memcpy(&myData, incomingData, sizeof(myData));
   Serial.print("Bytes received: ");
   Serial.println(len);
-  Serial.print("Char: ");
   Serial.println(myData.a);
-  Serial.print("Int: ");
+  Serial.print("Temp: ");
   Serial.println(myData.b);
-  Serial.print("Float: ");
+  Serial.print("Hum: ");
   Serial.println(myData.c);
-  Serial.print("String: ");
-  Serial.println(myData.d);
 }
 
 void setup()
