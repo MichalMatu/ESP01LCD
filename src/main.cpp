@@ -2,6 +2,7 @@
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
 #include <Adafruit_AHTX0.h>
+#include <ESP8266WiFi.h>
 
 #define SCREEN_WIDTH 128 // OLED display width, in pixels
 #define SCREEN_HEIGHT 64 // OLED display height, in pixels
@@ -11,6 +12,10 @@
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 Adafruit_AHTX0 aht;
 sensors_event_t humidity, temp;
+
+// create variable to store mac adress
+String mac;
+
 void setup()
 {
   Serial.begin(115200);
@@ -28,28 +33,42 @@ void setup()
       delay(10);
   }
   Serial.println("AHT10 or AHT20 found");
-  // set pin 2 as analog input
-  // pinMode(SensorPin, INPUT);
+  Serial.begin(115200);
+  Serial.println();
+  Serial.print("ESP8266 Board MAC Address:  ");
+  Serial.println(WiFi.macAddress());
+  mac = WiFi.macAddress();
 }
+
+// update temp and humidity every 5 seconds
+// create variable to keep track of time
+unsigned long lastTime = 0;
+unsigned long timerDelay = 5000;
 
 void loop()
 {
-  aht.getEvent(&humidity, &temp); // populate temp and humidity objects with fresh data
-  Serial.println(temp.temperature);
-  Serial.println(humidity.relative_humidity);
-  // display text on screen
-  display.clearDisplay();
-  display.setTextSize(1);
-  display.setTextColor(WHITE);
-  display.setCursor(0, 0);
-  display.print("Temp: ");
-  display.setCursor(50, 0);
-  display.print(temp.temperature);
-  display.setCursor(0, 20);
-  display.print("Hum: ");
-  display.setCursor(50, 20);
-  display.println(humidity.relative_humidity);
-
-  display.display();
-  delay(2000);
+  if (millis() - lastTime > timerDelay)
+  {
+    aht.getEvent(&humidity, &temp); // populate temp and humidity objects with fresh data
+    Serial.println(temp.temperature);
+    Serial.println(humidity.relative_humidity);
+    // display text on screen
+    display.clearDisplay();
+    display.setTextSize(1);
+    display.setTextColor(WHITE);
+    display.setCursor(0, 0);
+    display.print("T: ");
+    display.setCursor(20, 0);
+    display.print(static_cast<int>(temp.temperature));
+    display.print("C");
+    display.setCursor(60, 0);
+    display.print("H: ");
+    display.setCursor(80, 0);
+    display.print(static_cast<int>(humidity.relative_humidity));
+    display.print("%");
+    display.setCursor(10, 10);
+    display.print(mac);
+    display.display();
+    lastTime = millis();
+  }
 }
