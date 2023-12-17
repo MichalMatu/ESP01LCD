@@ -24,17 +24,13 @@ uint8_t broadcastAddress[] = {0x48, 0x3F, 0xDA, 0xAA, 0x0E, 0xB9};
 typedef struct struct_message
 {
   char a[32];
-  int b;
+  float b;
   float c;
   String d;
-  bool e;
 } struct_message;
 
 // Create a struct_message called myData
 struct_message myData;
-
-unsigned long lastTime = 0;
-unsigned long timerDelay = 2000; // send readings timer
 
 // Callback when data is sent
 void OnDataSent(uint8_t *mac_addr, uint8_t sendStatus)
@@ -121,20 +117,14 @@ void loop()
     display.print(mac);
     display.display();
     sensorLastTime = millis();
-  }
 
-  if ((millis() - lastTime) > timerDelay)
-  {
     // Set values to send
-    strcpy(myData.a, "THIS IS A CHAR");
-    myData.b = random(1, 20);
-    myData.c = 1.2;
-    myData.d = "Hello";
-    myData.e = false;
+    strcpy(myData.a, "THIS IS A SENSOR READINGS");
+    myData.b = temp.temperature;
+    myData.c = humidity.relative_humidity;
+    myData.d = "-----------------";
 
     // Send message via ESP-NOW
     esp_now_send(broadcastAddress, (uint8_t *)&myData, sizeof(myData));
-
-    lastTime = millis();
   }
 }
