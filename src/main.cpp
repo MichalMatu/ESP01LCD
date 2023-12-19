@@ -4,6 +4,7 @@
 #include <Adafruit_AHTX0.h>
 #include <ESP8266WiFi.h>
 #include <espnow.h>
+#include <Adafruit_ADS1X15.h>
 
 #define SCREEN_WIDTH 128 // OLED display width, in pixels
 #define SCREEN_HEIGHT 64 // OLED display height, in pixels
@@ -13,6 +14,8 @@
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 Adafruit_AHTX0 aht;
 sensors_event_t humidity, temp;
+
+Adafruit_ADS1115 ads; /* Use this for the 16-bit version */
 
 // create variable to store mac adress
 String mac;
@@ -81,6 +84,13 @@ void setup()
     return;
   }
 
+  if (!ads.begin())
+  {
+    Serial.println("Failed to initialize ADS.");
+    while (1)
+      ;
+  }
+
   // Once ESPNow is successfully Init, we will register for Send CB to
   // get the status of Trasnmitted packet
   esp_now_set_self_role(ESP_NOW_ROLE_CONTROLLER);
@@ -137,6 +147,42 @@ void loop()
 
     // Send message via ESP-NOW
     esp_now_send(broadcastAddress, (uint8_t *)&myData, sizeof(myData));
+
+    // ads1115
+    int16_t adc0, adc1, adc2, adc3;
+    float volts0, volts1, volts2, volts3;
+
+    adc0 = ads.readADC_SingleEnded(0);
+    adc1 = ads.readADC_SingleEnded(1);
+    adc2 = ads.readADC_SingleEnded(2);
+    adc3 = ads.readADC_SingleEnded(3);
+
+    volts0 = ads.computeVolts(adc0);
+    volts1 = ads.computeVolts(adc1);
+    volts2 = ads.computeVolts(adc2);
+    volts3 = ads.computeVolts(adc3);
+
+    Serial.println("-----------------------------------------------------------");
+    Serial.print("AIN0: ");
+    Serial.print(adc0);
+    Serial.print("  ");
+    Serial.print(volts0);
+    Serial.println("V");
+    Serial.print("AIN1: ");
+    Serial.print(adc1);
+    Serial.print("  ");
+    Serial.print(volts1);
+    Serial.println("V");
+    Serial.print("AIN2: ");
+    Serial.print(adc2);
+    Serial.print("  ");
+    Serial.print(volts2);
+    Serial.println("V");
+    Serial.print("AIN3: ");
+    Serial.print(adc3);
+    Serial.print("  ");
+    Serial.print(volts3);
+    Serial.println("V");
 
     sensorLastTime = millis();
   }
