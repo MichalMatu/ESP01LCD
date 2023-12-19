@@ -95,6 +95,20 @@ void loop()
   if (millis() - sensorLastTime > sensorTimerDelay)
   {
     aht.getEvent(&humidity, &temp);
+
+    int16_t adc0, adc1, adc2, adc3;
+    float volts0, volts1, volts2, volts3;
+
+    adc0 = ads.readADC_SingleEnded(0);
+    adc1 = ads.readADC_SingleEnded(1);
+    adc2 = ads.readADC_SingleEnded(2);
+    adc3 = ads.readADC_SingleEnded(3);
+
+    volts0 = ads.computeVolts(adc0);
+    volts1 = ads.computeVolts(adc1);
+    volts2 = ads.computeVolts(adc2);
+    volts3 = ads.computeVolts(adc3);
+
     Serial.println(temp.temperature);
     Serial.println(humidity.relative_humidity);
 
@@ -113,15 +127,36 @@ void loop()
     display.print("%");
     display.setCursor(10, 10);
     display.print(mac);
+    // display adc0m adc1, adc2, adc3 on the screen
+    display.setCursor(0, 20);
+    display.print("AIN0: ");
+    display.setCursor(40, 20);
+    display.print(volts0);
+    display.print("V");
+    display.setCursor(0, 30);
+    display.print("AIN1: ");
+    display.setCursor(40, 30);
+    display.print(volts1);
+    display.print("V");
+    display.setCursor(0, 40);
+    display.print("AIN2: ");
+    display.setCursor(40, 40);
+    display.print(volts2);
+    display.print("V");
+    display.setCursor(0, 50);
+    display.print("AIN3: ");
+    display.setCursor(40, 50);
+    display.print(volts3);
+    display.print("V");
 
-    display.setCursor(20, 20);
+    display.setCursor(90, 20);
     if (deviceConnected)
     {
-      display.print("Connected");
+      display.print("CON");
     }
     else
     {
-      display.print("Disconnected");
+      display.print("DIS");
     }
     display.display();
 
@@ -130,19 +165,6 @@ void loop()
     myData.c = humidity.relative_humidity;
 
     esp_now_send(broadcastAddress, (uint8_t *)&myData, sizeof(myData));
-
-    int16_t adc0, adc1, adc2, adc3;
-    float volts0, volts1, volts2, volts3;
-
-    adc0 = ads.readADC_SingleEnded(0);
-    adc1 = ads.readADC_SingleEnded(1);
-    adc2 = ads.readADC_SingleEnded(2);
-    adc3 = ads.readADC_SingleEnded(3);
-
-    volts0 = ads.computeVolts(adc0);
-    volts1 = ads.computeVolts(adc1);
-    volts2 = ads.computeVolts(adc2);
-    volts3 = ads.computeVolts(adc3);
 
     Serial.println("-----------------------------------------------------------");
     Serial.print("AIN0: ");
