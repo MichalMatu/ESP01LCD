@@ -89,6 +89,9 @@ void setup()
 
 unsigned long sensorLastTime = 0;
 unsigned long sensorTimerDelay = 5000;
+int soilMoistureValue = 0;
+int airValue = 11500;
+int waterValue = 4500;
 
 void loop()
 {
@@ -109,6 +112,9 @@ void loop()
     volts2 = ads.computeVolts(adc2);
     volts3 = ads.computeVolts(adc3);
 
+    // when volts0 is 1 then soil moisture is 100%, when volts0 is 2.15 then soil moisture is 0%. Make smooth transition between 1 and 2.15 to get soil moisture value
+    soilMoistureValue = map(adc0, airValue, waterValue, 0, 100);
+
     Serial.println(temp.temperature);
     Serial.println(humidity.relative_humidity);
 
@@ -125,7 +131,7 @@ void loop()
     display.setCursor(80, 0);
     display.print(static_cast<int>(humidity.relative_humidity));
     display.print("%");
-    display.setCursor(10, 10);
+    display.setCursor(0, 10);
     display.print(mac);
     // display adc0m adc1, adc2, adc3 on the screen
     display.setCursor(0, 20);
@@ -149,14 +155,19 @@ void loop()
     display.print(volts3);
     display.print("V");
 
-    display.setCursor(90, 20);
+    display.setCursor(80, 20);
+    display.print("SM: ");
+    display.setCursor(100, 20);
+    display.print(soilMoistureValue);
+
+    display.setCursor(115, 10);
     if (deviceConnected)
     {
-      display.print("CON");
+      display.print("1");
     }
     else
     {
-      display.print("DIS");
+      display.print("0");
     }
     display.display();
 
