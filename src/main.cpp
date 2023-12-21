@@ -90,7 +90,7 @@ void setup()
 unsigned long sensorLastTime = 0;
 unsigned long sensorTimerDelay = 5000;
 int soilMoistureValue = 0;
-int airValue = 11500;
+int airValue = 11000;
 int waterValue = 4500;
 
 void loop()
