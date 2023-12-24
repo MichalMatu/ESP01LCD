@@ -1,13 +1,15 @@
 
 #include <ESP8266WiFi.h>
 #include <espnow.h>
-#include <Adafruit_Sensor.h>
 #include <DHT.h>
 #include <DHT_U.h>
 
 #define DHTPIN 2
 #define DHTTYPE DHT22
 DHT dht(DHTPIN, DHTTYPE);
+
+#define uS_TO_S_FACTOR 1000000 /* Conversion factor for micro seconds to seconds */
+#define TIME_TO_SLEEP 5
 
 char mac[18]; // Change to char array
 
@@ -66,9 +68,6 @@ void setup()
 
 unsigned long sensorLastTime = 0;
 unsigned long sensorTimerDelay = 5000;
-int soilMoistureValue = 0;
-int airValue = 11000;
-int waterValue = 4500;
 
 void loop()
 {
