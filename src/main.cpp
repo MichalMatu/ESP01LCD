@@ -1,84 +1,58 @@
+/*
+  Rui Santos
+  Complete project details at https://RandomNerdTutorials.com/esp-now-esp8266-nodemcu-arduino-ide/
+
+  Permission is hereby granted, free of charge, to any person obtaining a copy
+  of this software and associated documentation files.
+
+  The above copyright notice and this permission notice shall be included in all
+  copies or substantial portions of the Software.
+*/
+
 #include <ESP8266WiFi.h>
 #include <espnow.h>
-#include <DHT.h>
-#include <DHT_U.h>
-#include <Wire.h>
 
-#define DHTPIN 2
-#define DHTTYPE DHT22
-DHT dht(DHTPIN, DHTTYPE);
-
-#define uS_TO_S_FACTOR 1000000 /* Conversion factor for micro seconds to seconds */
-#define TIME_TO_SLEEP 60
-
-char mac[18]; // Change to char array
-
-uint8_t broadcastAddress[] = {0xE0, 0x5A, 0x1B, 0xA1, 0x9B, 0x00};
+// Structure example to receive data
+// Must match the sender structure
 typedef struct struct_message
 {
-  char a[32];
-  float b;
-  float c;
+  bool a;
 } struct_message;
+
+// Create a struct_message called myData
 struct_message myData;
 
-bool deviceConnected = false;
-
-float t = 0.0;
-float h = 0.0;
-
-void OnDataSent(uint8_t *mac_addr, uint8_t sendStatus)
+// Callback function that will be executed when data is received
+void OnDataRecv(uint8_t *mac, uint8_t *incomingData, uint8_t len)
 {
-  // Serial.print("Last Packet Send Status: ");
-  // if (sendStatus == 0)
-  // {
-  //   Serial.println("Delivery success");
-  //   deviceConnected = true;
-  // }
-  // else
-  // {
-  //   Serial.println("Delivery fail");
-  //   deviceConnected = false;
-  // }
+  memcpy(&myData, incomingData, sizeof(myData));
+  Serial.print("Bytes received: ");
+  Serial.println(len);
+  Serial.print("BOOL: ");
+  Serial.println(myData.a);
 }
 
 void setup()
 {
-  dht.begin();
+  // Initialize Serial Monitor
+  Serial.begin(115200);
 
-  // Use char array instead of String
-  WiFi.macAddress().toCharArray(mac, 18);
-  // Serial.print("ESP8266 Board MAC Address:  ");
-  // Serial.println(mac);
-
-  Wire.begin(); // Initialize the I2C library
-
+  // Set device as a Wi-Fi Station
   WiFi.mode(WIFI_STA);
 
+  // Init ESP-NOW
   if (esp_now_init() != 0)
   {
-    // Serial.println("Error initializing ESP-NOW");
+    Serial.println("Error initializing ESP-NOW");
     return;
   }
 
-  esp_now_set_self_role(ESP_NOW_ROLE_CONTROLLER);
-  esp_now_register_send_cb(OnDataSent);
-
-  esp_now_add_peer(broadcastAddress, ESP_NOW_ROLE_SLAVE, 1, NULL, 0);
+  // Once ESPNow is successfully Init, we will register for recv CB to
+  // get recv packer info
+  esp_now_set_self_role(ESP_NOW_ROLE_SLAVE);
+  esp_now_register_recv_cb(OnDataRecv);
 }
 
 void loop()
 {
-  t = dht.readTemperature();
-  h = dht.readHumidity();
-
-  strcpy(myData.a, "DHT22");
-  myData.b = t;
-  myData.c = h;
-
-  esp_now_send(broadcastAddress, (uint8_t *)&myData, sizeof(myData));
-
-  // Serial.println("Going to sleep now...");
-  ESP.deepSleep(TIME_TO_SLEEP * uS_TO_S_FACTOR, RF_CAL);
-  delay(100); // Some delay to allow ESP8266 to enter deep sleep properly
 }
