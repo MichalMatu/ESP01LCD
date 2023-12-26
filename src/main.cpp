@@ -13,7 +13,7 @@ DHT dht(DHTPIN, DHTTYPE);
 
 char mac[18]; // Change to char array
 
-uint8_t broadcastAddress[] = {0x48, 0x3F, 0xDA, 0xAA, 0x0E, 0xB9};
+uint8_t broadcastAddress[] = {0xE0, 0x5A, 0x1B, 0xA1, 0x9B, 0x00};
 typedef struct struct_message
 {
   char a[32];
